@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quantifiers Quest: Let's Get 10/10!</title>
+<style>
+:root{--blue:#5b8def;--blue-l:#dce8ff;--purple:#8b6cf0;--purple-l:#ece6ff;--yellow:#ffd54a;--yellow-l:#fff6cf;--pink:#ffc2dd;--pink-l:#ffeaf4;--green:#34b67a;--green-l:#dcf7e8;--ink:#2b2a4c;--soft:#6b6a8c}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Noto Sans Thai","Sarabun","Leelawadee UI",Tahoma,system-ui,sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--blue-l),var(--purple-l) 55%,var(--pink-l));min-height:100vh;padding:16px;line-height:1.55}
+#app{max-width:680px;margin:0 auto}
+.screen{display:none}.screen.active{display:block}
+.card{background:#fff;border-radius:28px;padding:24px;box-shadow:0 10px 30px rgba(91,141,239,.18);margin-bottom:16px}
+h1{font-size:clamp(1.8rem,6vw,2.6rem);line-height:1.2;margin:8px 0;color:var(--purple)}
+h2{margin:0 0 8px;font-size:1.4rem}
+.hero{text-align:center}
+.mascot{font-size:4rem;display:inline-block;animation:float 3s ease-in-out infinite}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0}
+.chip{padding:6px 16px;border-radius:999px;font-weight:700;font-size:1.05rem}
+.chip:nth-child(1){background:var(--blue-l)}.chip:nth-child(2){background:var(--yellow-l)}.chip:nth-child(3){background:var(--pink-l)}.chip:nth-child(4){background:var(--purple-l)}
+button{font:inherit;cursor:pointer;border:0}
+.btn{background:var(--purple);color:#fff;font-weight:700;font-size:1.1rem;padding:14px 28px;border-radius:999px;box-shadow:0 5px 0 #6a4fd0;transition:transform .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #6a4fd0}
+.btn.alt{background:var(--yellow);color:var(--ink);box-shadow:0 5px 0 #d9ae1e}
+.btn.alt:active{box-shadow:0 2px 0 #d9ae1e}
+.btn.ghost{background:var(--blue-l);color:var(--ink);box-shadow:0 5px 0 #b3c8f5}
+.btn:focus-visible,.opt:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
+.btn[hidden]{display:none}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+.top{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:8px}
+.pill{background:var(--yellow-l);padding:4px 14px;border-radius:999px}
+.bar{height:14px;background:var(--blue-l);border-radius:999px;overflow:hidden;margin-bottom:16px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:999px;transition:width .4s}
+.q{font-size:clamp(1.3rem,4.5vw,1.7rem);font-weight:700;line-height:1.4;margin:8px 0 20px}
+.q u{display:inline-block;min-width:3.2em;border-bottom:4px dashed var(--purple);text-decoration:none;text-align:center;color:var(--purple)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{background:var(--blue-l);color:var(--ink);font-size:1.2rem;font-weight:700;padding:16px 10px;border-radius:20px;border:3px solid transparent;transition:transform .1s,background .2s}
+.opt:hover:not(:disabled){transform:translateY(-2px);background:var(--purple-l)}
+.opt.wrong{background:var(--pink-l);border-color:var(--pink);opacity:.7}
+.opt.right{background:var(--green-l);border-color:var(--green);animation:pop .5s}
+.opt:disabled{cursor:default}
+.fb{border-radius:20px;padding:16px;margin-top:16px;animation:slide .3s}
+.fb.ok{background:var(--green-l)}.fb.no{background:var(--pink-l)}
+.fb h3{margin:0 0 6px;font-size:1.2rem}
+.fb p{margin:6px 0}
+.score{text-align:center}
+.big{font-size:4rem;font-weight:800;color:var(--purple);line-height:1}
+.stars{font-size:2rem;margin:8px 0}
+.review-item{border-left:6px solid var(--green);background:#fafaff;border-radius:16px;padding:12px 16px;margin:12px 0}
+.review-item.tried{border-color:var(--yellow)}
+.review-item b{color:var(--purple)}
+.tag{display:inline-block;background:var(--purple-l);padding:2px 12px;border-radius:999px;margin:2px;font-weight:700}
+.rule{background:var(--yellow-l);border-radius:16px;padding:12px 16px;margin:8px 0;text-align:left}
+@keyframes float{50%{transform:translateY(-10px)}}
+@keyframes pop{40%{transform:scale(1.08)}}
+@keyframes slide{from{opacity:0;transform:translateY(8px)}}
+@media(max-width:420px){.opts{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== 3D + เสียง ===== */
+.scene{width:110px;height:110px;perspective:700px;margin:12px auto 36px}
+.cube{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:spin 10s linear infinite}
+.face{position:absolute;width:110px;height:110px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:800;border-radius:20px;border:4px solid #fff;box-shadow:inset 0 -8px 0 rgba(0,0,0,.08)}
+.f1{transform:translateZ(55px);background:var(--blue-l)}
+.f2{transform:rotateY(90deg) translateZ(55px);background:var(--yellow-l)}
+.f3{transform:rotateY(180deg) translateZ(55px);background:var(--pink-l)}
+.f4{transform:rotateY(-90deg) translateZ(55px);background:var(--purple-l)}
+.f5{transform:rotateX(90deg) translateZ(55px);background:var(--green-l);font-size:2.4rem}
+.f6{transform:rotateX(-90deg) translateZ(55px);background:var(--yellow-l);font-size:2.4rem}
+@keyframes spin{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
+.coin{animation:coin 3s linear infinite}
+@keyframes coin{to{transform:rotateY(360deg)}}
+.opts{perspective:800px}
+.opt{box-shadow:0 6px 0 #b3c8f5,0 10px 14px rgba(91,141,239,.25);transform-style:preserve-3d}
+.opt:hover:not(:disabled){transform:translateY(-3px) rotateX(10deg) translateZ(8px)}
+.opt:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 #b3c8f5}
+.opt.right{box-shadow:0 6px 0 #25a067;animation:flip3d .7s}
+.opt.wrong{box-shadow:0 2px 0 #f4a3c6}
+@keyframes flip3d{0%{transform:rotateY(0)}50%{transform:rotateY(180deg) scale(1.1)}100%{transform:rotateY(360deg)}}
+#quiz .card,#welcome .card,#result .card{transform:perspective(1200px) rotateX(1.5deg)}
+.spark{position:fixed;z-index:50;pointer-events:none;font-size:1.6rem;animation:fly 1s ease-out forwards}
+@keyframes fly{to{transform:perspective(500px) translate3d(var(--x),var(--y),var(--z)) rotateY(var(--r));opacity:0}}
+.mute{position:fixed;top:12px;right:12px;z-index:60;width:48px;height:48px;border-radius:50%;background:#fff;font-size:1.4rem;box-shadow:0 4px 0 #b3c8f5}
+.mute:focus-visible{outline:4px solid var(--yellow)}
+</style>
+</head>
+<body>
+<button class="mute" id="muteBtn" aria-label="เปิดหรือปิดเสียง">🔊</button>
+<div id="app">
+
+<!-- Welcome -->
+<section id="welcome" class="screen active">
+  <div class="card hero">
+    <div class="scene" aria-hidden="true"><div class="cube">
+      <div class="face f1">much</div><div class="face f2">many</div><div class="face f3">a lot of</div><div class="face f4">lots of</div><div class="face f5">🦊</div><div class="face f6">⭐</div></div></div>
+    <h1>Quantifiers Quest<br>Let's Get 10/10!</h1>
+    <p>ช่วยน้องจิ้งจอกเลือกคำให้ถูกต้อง ตอบคำถาม 10 ข้อ ข้อละ 1 คะแนน<br>ตอบผิดไม่เป็นไร ลองใหม่ได้เลย 💖</p>
+    <div class="chips" aria-label="คำที่จะได้ฝึก"><span class="chip">much</span><span class="chip">many</span><span class="chip">a lot of</span><span class="chip">lots of</span></div>
+    <button class="btn" id="startBtn">เริ่มเกม 🚀</button>
+  </div>
+</section>
+
+<!-- Quiz + Feedback -->
+<section id="quiz" class="screen">
+  <div class="card">
+    <div class="top"><span id="qNum">ข้อ 1 / 10</span><span class="pill" id="scoreNow">⭐ 0 คะแนน</span></div>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="10" id="bar" aria-label="ความคืบหน้า"><i id="barFill"></i></div>
+    <div class="q" id="qText"></div>
+    <div class="opts" id="opts"></div>
+    <div id="feedback" aria-live="polite"></div>
+    <div class="row">
+      <button class="btn alt" id="retryBtn" hidden>ลองอีกครั้ง 💪</button>
+      <button class="btn" id="nextBtn" hidden>ข้อต่อไป ➡️</button>
+    </div>
+  </div>
+</section>
+
+<!-- Result -->
+<section id="result" class="screen">
+  <div class="card score">
+    <div class="mascot coin" aria-hidden="true">🏆</div>
+    <h2>ผลการเล่นของเธอ</h2>
+    <div class="big"><span id="finalScore">0</span>/10</div>
+    <div class="stars" id="stars"></div>
+    <p id="correctCount"></p>
+    <p id="msg"></p>
+    <div id="weak"></div>
+    <div class="row">
+      <button class="btn alt" id="reviewBtn">ทบทวนคำตอบ 📖</button>
+      <button class="btn" id="againBtn">เล่นอีกครั้ง 🔄</button>
+    </div>
+  </div>
+</section>
+
+<!-- Review -->
+<section id="review" class="screen">
+  <div class="card">
+    <h2>ทบทวนคำตอบทั้ง 10 ข้อ 📖</h2>
+    <div class="rule"><b>จำง่าย ๆ:</b> many + นามนับได้พหูพจน์ | much + นามนับไม่ได้ | a lot of / lots of ใช้ได้กับทั้งสองแบบ (นิยมในประโยคบอกเล่า)</div>
+    <div id="reviewList"></div>
+    <div class="row">
+      <button class="btn ghost" id="backBtn">กลับไปดูคะแนน</button>
+      <button class="btn" id="again2Btn">เล่นอีกครั้ง 🔄</button>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* ===== แก้ไขคำถามได้ที่นี่ =====
+   s: ประโยค (ใช้ ___ แทนช่องว่าง) | o: ตัวเลือก 4 ข้อ | a: คำตอบที่ถูก
+   tag: หัวข้อ (many/much/alot/lots) | hint: คำใบ้ | why: คำอธิบายเมื่อตอบถูก/ทบทวน */
+const QUESTIONS = [
+ {s:"How ___ students are in your class?", o:["much","many","a lot of","lots of"], a:"many", tag:"many",
+  hint:"students นับได้หรือไม่? แล้วคำว่า How ตามด้วย a lot of / lots of ได้ไหมนะ?",
+  why:"students เป็นนามนับได้พหูพจน์ และเป็นประโยคคำถามแบบ How ___ จึงใช้ many (How many + นามนับได้พหูพจน์)"},
+ {s:"How ___ water do you drink every day?", o:["many","much","a lot of","lots of"], a:"much", tag:"much",
+  hint:"water คือน้ำ ลองนับดูสิ นับเป็นหนึ่ง สอง สาม ได้ไหม?",
+  why:"water เป็นนามนับไม่ได้ ในประโยคคำถามแบบ How ___ จึงใช้ much (How much + นามนับไม่ได้)"},
+ {s:"I don't have ___ homework today.", o:["many","much","a lot","lots"], a:"much", tag:"much",
+  hint:"homework นับได้ไหม? และ a lot / lots ยังขาดคำเล็ก ๆ อีกคำหนึ่งนะ",
+  why:"homework เป็นนามนับไม่ได้ และเป็นประโยคปฏิเสธ จึงใช้ much ส่วน a lot / lots ต้องตามด้วย of"},
+ {s:"We don't have ___ apples at home.", o:["much","many","a lot","lots"], a:"many", tag:"many",
+  hint:"apples ลงท้ายด้วย s ซึ่งบอกว่านับได้หลายผลนะ",
+  why:"apples เป็นนามนับได้พหูพจน์ ในประโยคปฏิเสธจึงใช้ many"},
+ {s:"My grandma cooks ___ rice for the party.", o:["many","much","a lot of","a lot"], a:"a lot of", tag:"alot",
+  hint:"นี่เป็นประโยคบอกเล่า คำไหนมักใช้บ่อยในประโยคบอกเล่า และต้องมีคำว่า of ตามหลัง?",
+  why:"ในประโยคบอกเล่า นิยมใช้ a lot of กับ rice (นามนับไม่ได้) เพราะ much ไม่ค่อยใช้ในประโยคบอกเล่า"},
+ {s:"There are ___ friends at my birthday party.", o:["much","lots","lots of","a lot"], a:"lots of", tag:"lots",
+  hint:"ในประโยคบอกเล่า มีคำที่หมายถึง “มากมาย” และต้องมี of ตามหลังเสมอ",
+  why:"lots of ใช้ได้กับ friends (นามนับได้พหูพจน์) ในประโยคบอกเล่า และต้องมี of เสมอ"},
+ {s:"Is there ___ milk in the fridge?", o:["many","much","lots","a lot"], a:"much", tag:"much",
+  hint:"milk นับได้ไหม? และนี่เป็นประโยคคำถามนะ",
+  why:"milk เป็นนามนับไม่ได้ และเป็นประโยคคำถาม จึงใช้ much"},
+ {s:"There is ___ juice on the table.", o:["many","lots","a lot","lots of"], a:"lots of", tag:"lots",
+  hint:"juice นับไม่ได้ ดังนั้น many ใช้ไม่ได้ ส่วนคำที่เหลือต้องมี of ตามหลัง",
+  why:"lots of ใช้กับ juice (นามนับไม่ได้) ในประโยคบอกเล่า ส่วน lots เฉย ๆ ขาด of"},
+ {s:"Are there ___ books in the library?", o:["much","many","a lot","lots"], a:"many", tag:"many",
+  hint:"books เป็นพหูพจน์ และเป็นประโยคคำถาม ลองนึกถึงคู่กับคำนามนับได้",
+  why:"books เป็นนามนับได้พหูพจน์ ในประโยคคำถามจึงใช้ many"},
+ {s:"She has ___ colorful pens in her bag.", o:["much","a lot of","a lot","lot of"], a:"a lot of", tag:"alot",
+  hint:"รูปที่ถูกต้องของ “มากมาย” มี 3 คำ: a + lot + of ลองดูว่าตัวเลือกไหนครบ",
+  why:"a lot of ใช้ได้กับ pens (นามนับได้พหูพจน์) ในประโยคบอกเล่า ต้องเขียนครบว่า a lot of"}
+];
+const TAGS={many:"many (กับนามนับได้พหูพจน์)",much:"much (กับนามนับไม่ได้)",alot:"a lot of",lots:"lots of"};
+const OK_MSG=["เก่งมาก! 🎉","ยอดเยี่ยม! ⭐","ถูกต้องเลย! 🥳","สุดยอด! 🌟"];
+const NO_MSG=["ไม่เป็นไร ลองคิดอีกนิดนะ 💖","ใกล้แล้ว! มาดูคำใบ้กัน 💡","สู้ ๆ นะ ลองใหม่ได้เลย 🌈"];
+
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let game=[],idx=0,score=0,locked=false;
+
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");window.scrollTo(0,0)}
+
+function start(){
+  game=shuffle(QUESTIONS).map(q=>({...q,o:shuffle(q.o),tries:0,done:false}));
+  idx=0;score=0;show("quiz");render();
+}
+function render(){
+  const q=game[idx];locked=false;
+  $("qNum").textContent=`ข้อ ${idx+1} / ${game.length}`;
+  $("scoreNow").textContent=`⭐ ${score} คะแนน`;
+  $("barFill").style.width=(idx/game.length*100)+"%";
+  $("bar").setAttribute("aria-valuenow",idx);
+  $("qText").innerHTML=q.s.replace("___","<u>&nbsp;?&nbsp;</u>");
+  $("feedback").innerHTML="";$("retryBtn").hidden=true;$("nextBtn").hidden=true;
+  const box=$("opts");box.innerHTML="";
+  q.o.forEach(t=>{const b=document.createElement("button");b.className="opt";b.textContent=t;b.onclick=()=>answer(b,t);box.appendChild(b)});
+}
+function answer(btn,choice){
+  const q=game[idx];
+  if(locked||q.done)return;       // กันกดซ้ำ/รับคะแนนซ้ำ
+  locked=true;q.tries++;
+  const fb=$("feedback");
+  if(choice===q.a){
+    q.done=true;score++;                 // ให้คะแนนครั้งเดียวต่อข้อ
+    btn.classList.add("right");sfx.ok();burst(btn);
+    document.querySelectorAll(".opt").forEach(b=>b.disabled=true);
+    $("scoreNow").textContent=`⭐ ${score} คะแนน`;
+    $("barFill").style.width=((idx+1)/game.length*100)+"%";
+    fb.innerHTML=`<div class="fb ok"><h3>${OK_MSG[idx%OK_MSG.length]} +1 คะแนน</h3><p>${q.why}</p></div>`;
+    const n=$("nextBtn");n.textContent=idx===game.length-1?"ดูผลคะแนน 🏆":"ข้อต่อไป ➡️";n.hidden=false;n.focus();
+  }else{
+    btn.classList.add("wrong");btn.disabled=true;sfx.no();
+    fb.innerHTML=`<div class="fb no"><h3>${NO_MSG[q.tries%NO_MSG.length]}</h3><p>💡 <b>คำใบ้:</b> ${q.hint}</p><p>ลองใหม่ได้ ไม่เสียคะแนนนะ!</p></div>`;
+    $("retryBtn").hidden=false;$("retryBtn").focus();
+  }
+}
+function retry(){locked=false;$("retryBtn").hidden=true;$("feedback").innerHTML=""}
+function next(){
+  if(!game[idx].done)return;
+  if(idx<game.length-1){idx++;render()}else finish();
+}
+function finish(){
+  show("result");sfx.win(score);
+  $("finalScore").textContent=score;
+  $("correctCount").textContent=`ตอบถูก ${score} จาก ${game.length} ข้อ`;
+  $("stars").textContent=score>=9?"🌟🌟🌟":score>=6?"🌟🌟":"🌟";
+  $("msg").textContent=score===10?"เต็ม 10! เก่งที่สุดเลย 🎉 พร้อมเรียนบทเรียนแล้ว!":score>=8?"เก่งมาก! 🎉 เข้าใจเรื่อง Quantifiers ได้ดีเลย":score>=5?"ทำได้ดีมาก! 💖 ทบทวนอีกนิดจะยิ่งแม่นขึ้น":"ไม่เป็นไรนะ 🌈 มาเรียนรู้ไปด้วยกันในบทเรียน แล้วลองเล่นอีกครั้งได้เลย";
+  const tried=[...new Set(game.filter(q=>q.tries>1).map(q=>q.tag))];
+  $("weak").innerHTML=tried.length
+    ?`<div class="rule"><b>จุดที่ควรทบทวน:</b><br>${tried.map(t=>`<span class="tag">${TAGS[t]}</span>`).join("")}</div>`
+    :`<div class="rule">ไม่มีจุดที่ต้องทบทวนเลย ตอบถูกตั้งแต่ครั้งแรกทุกข้อ! 🎯</div>`;
+}
+function showReview(){
+  $("reviewList").innerHTML=game.map((q,i)=>`<div class="review-item ${q.tries>1?"tried":""}">
+    <div><b>ข้อ ${i+1}.</b> ${q.s.replace("___",`<b>${q.a}</b>`)}</div>
+    <div>✅ เฉลย: <b>${q.a}</b> ${q.tries>1?`<span class="tag">ลอง ${q.tries} ครั้ง</span>`:`<span class="tag">ถูกในครั้งแรก</span>`}</div>
+    <div>📝 ${q.why}</div></div>`).join("");
+  show("review");
+}
+/* ===== เสียง (สร้างด้วย Web Audio ไม่ต้องใช้ไฟล์เสียง) ===== */
+let AC=null,muted=false;
+function ctx(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==="suspended")AC.resume();return AC}
+function tone(f,t,d,type="sine",v=.15){
+  if(muted)return;const c=ctx();if(!c)return;
+  const o=c.createOscillator(),g=c.createGain(),s=c.currentTime+t;
+  o.type=type;o.frequency.value=f;
+  g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(v,s+.02);g.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(g);g.connect(c.destination);o.start(s);o.stop(s+d+.05);
+}
+const sfx={
+  tap(){tone(660,0,.08,"triangle")},
+  ok(){[523,659,784,1047].forEach((f,i)=>tone(f,i*.09,.25,"triangle"))},
+  no(){tone(330,0,.18);tone(262,.14,.25)},            // เสียงนุ่ม ๆ ไม่ดุ
+  win(sc){(sc>=5?[523,659,784,659,784,1047]:[392,440,523]).forEach((f,i)=>tone(f,i*.13,.3,"triangle"))}
+};
+function burst(el){
+  const r=el.getBoundingClientRect();
+  for(let i=0;i<12;i++){
+    const s=document.createElement("span");s.className="spark";s.textContent=["⭐","✨","🎉","💖"][i%4];
+    s.style.left=(r.left+r.width/2)+"px";s.style.top=(r.top+r.height/2)+"px";
+    s.style.setProperty("--x",(Math.random()*300-150)+"px");s.style.setProperty("--y",(-Math.random()*200-40)+"px");
+    s.style.setProperty("--z",(Math.random()*200)+"px");s.style.setProperty("--r",(Math.random()*720-360)+"deg");
+    document.body.appendChild(s);setTimeout(()=>s.remove(),1000);
+  }
+}
+$("muteBtn").onclick=()=>{muted=!muted;$("muteBtn").textContent=muted?"🔇":"🔊";if(!muted)sfx.tap()};
+document.addEventListener("click",e=>{if(e.target.closest(".btn"))sfx.tap()});
+
+$("startBtn").onclick=start;
+$("retryBtn").onclick=retry;
+$("nextBtn").onclick=next;
+$("againBtn").onclick=start;
+$("again2Btn").onclick=start;
+$("reviewBtn").onclick=showReview;
+$("backBtn").onclick=()=>show("result");
+</script>
+</body>
+</html>
